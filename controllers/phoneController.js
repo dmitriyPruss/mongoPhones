@@ -1,119 +1,106 @@
-// const { Phone } = require('./../models');
-// const _ = require('lodash');
+const _ = require('lodash');
+const { createErr400, createErr404 } = require('./../middleware/errHw');
+const { Phone } = require('./../models');
 
-// module.exports.getPhones = async (req, res, next) => {
-//   try {
-//     const foundPhones = await Phone.findAll({
-//       raw: true,
-//       attributes: {
-//         exclude: ['createdAt', 'updatedAt']
-//       },
-//       limit: 7
-//     });
+const phoneProps = [
+  '_id',
+  'model',
+  'brand',
+  'manufacturedYear',
+  'RAMsize',
+  'CPUname',
+  'isNFC'
+];
 
-//     res.status(200).send(foundPhones);
-//   } catch (error) {
-//     next(error);
-//   }
-// };
+// CREATE
+module.exports.createPhone = async (req, res, next) => {
+  const { body } = req;
+  try {
+    const newPhoneInst = new Phone(body);
+    const createdPhone = await newPhoneInst.save();
 
-// module.exports.getPhoneById = async (req, res, next) => {
-//   const {
-//     params: { phoneId }
-//   } = req;
+    if (createdPhone) {
+      return res.status(200).send({ data: createdPhone });
+    }
+    next(createErr400);
+  } catch (error) {
+    next(error);
+  }
+};
 
-//   try {
-//     const foundPhone = await Phone.findByPk(phoneId, {
-//       raw: true,
-//       attributes: {
-//         exclude: ['id', 'createdAt', 'updatedAt']
-//       }
-//     });
+// READ
+module.exports.getPhones = async (req, res, next) => {
+  try {
+    const foundPhones = await Phone.find().limit(5);
 
-//     foundPhone
-//       ? res.status(200).send(foundPhone)
-//       : res.status(404).send('Sorry, this phone not found');
-//   } catch (error) {
-//     next(error);
-//   }
-// };
+    const foundPhonesData = foundPhones.map(foundPhone => {
+      const foundPhoneData = _.pick(foundPhone, phoneProps);
+      foundPhoneData.screenDiagonal = +foundPhone.screenDiagonal;
 
-// module.exports.createPhone = async (req, res, next) => {
-//   const { body } = req;
+      return foundPhoneData;
+    });
 
-//   try {
-//     const createdPhone = await Phone.create(body);
-//     const sendedPhone = _.omit(createdPhone.get(), [
-//       'id',
-//       'createdAt',
-//       'updatedAt'
-//     ]);
+    res.status(200).send({ data: foundPhonesData });
+  } catch (error) {
+    next(error);
+  }
+};
 
-//     res.status(200).send(sendedPhone);
-//   } catch (error) {
-//     next(error);
-//   }
-// };
+module.exports.getPhoneById = async (req, res, next) => {
+  const {
+    params: { phoneId }
+  } = req;
 
-// module.exports.updatePhone = async (req, res, next) => {
-//   const {
-//     params: { phoneId },
-//     body
-//   } = req;
+  try {
+    const foundPhone = await Phone.findById(phoneId);
 
-//   try {
-//     const [updatedPhoneCount, [updatedPhoneData]] = await Phone.update(body, {
-//       where: { id: phoneId },
-//       returning: true
-//     });
+    if (foundPhone) {
+      const phoneData = _.pick(foundPhone, phoneProps);
+      phoneData.screenDiagonal = +foundPhone.screenDiagonal;
 
-//     if (updatedPhoneCount) {
-//       const sendedPhone = _.pick(updatedPhoneData.get(), [
-//         'model',
-//         'brand',
-//         'manufacturedYear',
-//         'CPU'
-//       ]);
-//       res.status(200).send(sendedPhone);
-//     }
+      return res.status(200).send({ data: phoneData });
+    }
+    next(createErr404);
+  } catch (error) {
+    next(error);
+  }
+};
 
-//     res.status(404).send('Phone not found!');
-//   } catch (error) {
-//     next(error);
-//   }
-// };
+// UPDATE
+module.exports.updatePhoneById = async (req, res, next) => {
+  const {
+    params: { phoneId },
+    body
+  } = req;
 
-// module.exports.updateOrCreatePhone = async (req, res, next) => {
-//   const {
-//     params: { phoneId },
-//     body
-//   } = req;
+  try {
+    const updatedPhone = await Phone.findByIdAndUpdate(phoneId, body);
 
-//   try {
-//     const [updatedPhoneCount] = await Phone.update(body, {
-//       where: { id: phoneId }
-//     });
+    if (updatedPhone) {
+      return next();
+    }
 
-//     updatedPhoneCount
-//       ? res.status(204).send()
-//       : ((req.body.id = phoneId), next());
-//   } catch (error) {
-//     next(error);
-//   }
-// };
+    next(createErr404);
+  } catch (error) {
+    next(error);
+  }
+};
 
-// module.exports.deletePhone = async (req, res, next) => {
-//   const {
-//     params: { phoneId }
-//   } = req;
+// DELETE
+module.exports.deletePhoneById = async (req, res, next) => {
+  const {
+    params: { phoneId }
+  } = req;
 
-//   try {
-//     const deletedPhone = await Phone.destroy({ where: { id: phoneId } });
+  try {
+    const deletedPhone = await Phone.findByIdAndDelete(phoneId);
 
-//     deletedPhone
-//       ? res.status(204).send()
-//       : res.status(404).send('Phone not found');
-//   } catch (error) {
-//     next(error);
-//   }
-// };
+    if (deletedPhone) {
+      return res.status(200).send({ data: deletedPhone });
+    }
+
+    next(createErr404);
+  } catch (error) {
+    next(error);
+  }
+};

@@ -4,9 +4,19 @@ const CONSTANTS = {
   DBMS: 'mongodb',
   DATABASE_CURRENT_NAME: 'phones_db',
   PROCESS_DEV: 'development',
-  ERROR_500: {
-    ERROR_CODE: 500,
-    ERROR_MESSAGE: 'INTERNAL SERVER ERROR'
+  ERRORS: {
+    ERROR_400: {
+      ERROR_CODE: 400,
+      ERROR_MESSAGE: 'Bad Request'
+    },
+    ERROR_404: {
+      ERROR_CODE: 404,
+      ERROR_MESSAGE: 'Not Found'
+    },
+    ERROR_500: {
+      ERROR_CODE: 500,
+      ERROR_MESSAGE: 'INTERNAL SERVER ERROR'
+    }
   }
 };
 
