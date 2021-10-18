@@ -2,7 +2,7 @@
   {
     "name": "Exynos 2100",
     "num_of_cores": 8,
-    "frequency": "1×2,9 GHz + 3×2,8 GHz + 4×2,2 GHz",
+    "frequency": "1x2,9 GHz + 3x2,8 GHz + 4x2,2 GHz",
     "GPU": "Mali-G78 MP14"
   },
   {

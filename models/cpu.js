@@ -1,62 +1,42 @@
-// 'use strict';
-// const { Model } = require('sequelize');
-// module.exports = (sequelize, DataTypes) => {
-//   class CPU extends Model {
-//     /**
-//      * Helper method for defining associations.
-//      * This method is not a part of Sequelize lifecycle.
-//      * The `models/index` file will call this method automatically.
-//      */
-//     static associate (models) {
-//       CPU.hasMany(models.Phone, {
-//         foreignKey: 'CPU_id',
-//         onUpdate: 'CASCADE',
-//         onDelete: 'RESTRICT'
-//       });
-//     }
-//   }
-//   CPU.init(
-//     {
-//       name: {
-//         type: DataTypes.STRING,
-//         allowNull: false,
-//         validate: {
-//           is: /^[A-Za-z0-9\s]{1,30}$/
-//         }
-//       },
-//       num_of_cores: {
-//         type: DataTypes.SMALLINT,
-//         allowNull: false,
-//         validate: {
-//           isIn: {
-//             args: [[4, 6, 8]],
-//             msg: 'Wrong value for cores quantity!'
-//           }
-//         }
-//       },
-//       frequency: {
-//         type: DataTypes.STRING,
-//         allowNull: false,
-//         validate: {
-//           contains: 'GHz'
-//         }
-//       },
-//       GPU: {
-//         type: DataTypes.STRING,
-//         allowNull: false
-//       }
-//     },
-//     {
-//       indexes: [
-//         {
-//           name: 'CPU_spec',
-//           unique: true,
-//           fields: ['name', 'num_of_cores', 'frequency']
-//         }
-//       ],
-//       sequelize,
-//       modelName: 'CPU'
-//     }
-//   );
-//   return CPU;
-// };
+const mongoose = require('mongoose');
+const { Schema } = mongoose;
+const {
+  EQUIPMENT_NAME_VALIDATION_SCHEMA,
+  FREQUENCY_VALIDATION_SCHEMA
+} = require('./../utils/validationSchemas');
+
+const cpuSchema = new Schema({
+  name: {
+    type: String,
+    required: true,
+    validate: {
+      validator: value => EQUIPMENT_NAME_VALIDATION_SCHEMA.isValidSync(value)
+    }
+  },
+  num_of_cores: {
+    type: Number,
+    required: true,
+    enum: {
+      values: [4, 6, 8],
+      message: 'Wrong value for cores quantity!'
+    },
+    alias: 'cores'
+  },
+  frequency: {
+    type: String,
+    required: true,
+    validate: {
+      validator: value => FREQUENCY_VALIDATION_SCHEMA.isValidSync(value)
+    }
+  },
+  GPU: {
+    type: String,
+    required: true,
+    minLength: [3, 'Name is too short'],
+    maxlength: [42, , 'Name is too long']
+  }
+});
+
+const CPU = mongoose.model('cpus', cpuSchema);
+
+module.exports = CPU;

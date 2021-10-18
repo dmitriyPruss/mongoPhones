@@ -1,80 +1,59 @@
-// 'use strict';
-// const { Model } = require('sequelize');
-// module.exports = (sequelize, DataTypes) => {
-//   class Phone extends Model {
-//     /**
-//      * Helper method for defining associations.
-//      * This method is not a part of Sequelize lifecycle.
-//      * The `models/index` file will call this method automatically.
-//      */
-//     static associate (models) {
-//       Phone.belongsTo(models.CPU, {
-//         foreignKey: 'CPU_id'
-//       });
-//     }
-//   }
-//   Phone.init(
-//     {
-//       model: {
-//         type: DataTypes.STRING,
-//         allowNull: false,
-//         validate: {
-//           is: /^[A-Z][a-z0-9]{1,20}$/
-//         }
-//       },
-//       brand: {
-//         type: DataTypes.STRING,
-//         allowNull: false,
-//         validate: {
-//           is: /^[A-Za-z0-9\s]{1,30}$/
-//         }
-//       },
-//       manufacturedYear: {
-//         type: DataTypes.SMALLINT,
-//         allowNull: false,
-//         validate: {
-//           min: 2010,
-//           max: new Date().getFullYear()
-//         }
-//       },
-//       RAMsize: {
-//         type: DataTypes.SMALLINT,
-//         allowNull: false,
-//         validate: {
-//           isIn: [[1, 2, 3, 4, 6, 8, 16, 32, 64]]
-//         }
-//       },
-//       CPUname: {
-//         type: DataTypes.STRING,
-//         allowNull: false,
-//         validate: {
-//           is: /^[A-Za-z0-9\s]{1,30}$/
-//         }
-//       },
-//       screenDiagonal: {
-//         type: DataTypes.DECIMAL,
-//         allowNull: false,
-//         validate: {
-//           min: 2.5,
-//           max: 7.6
-//         }
-//       },
-//       isNFC: {
-//         type: DataTypes.BOOLEAN,
-//         defaultValue: true
-//       }
-//     },
-//     {
-//       indexes: [
-//         {
-//           name: 'Phone_spec',
-//           unique: true,
-//           fields: ['model', 'brand', 'manufacturedYear', 'RAMsize']
-//         }
-//       ],
-//       sequelize,
-//       modelName: 'Phone'
-//     }
-//   );
-//   return Phone;
-// };
+const mongoose = require('mongoose');
+const { Schema } = mongoose;
+const {
+  MODEL_VALIDATION_SCHEMA,
+  EQUIPMENT_NAME_VALIDATION_SCHEMA
+} = require('./../utils/validationSchemas');
+
+const phoneSchema = new Schema({
+  model: {
+    type: String,
+    validate: {
+      validator: value => MODEL_VALIDATION_SCHEMA.isValidSync(value)
+    }
+  },
+  brand: {
+    type: String,
+    required: true,
+    validate: {
+      validator: value => EQUIPMENT_NAME_VALIDATION_SCHEMA.isValidSync(value)
+    }
+  },
+  manufacturedYear: {
+    type: Number,
+    required: true,
+    min: [2009, 'It is too early'],
+    max: [new Date().getFullYear(), 'This year hasn`t yet come'],
+    alias: 'prodYear'
+  },
+  RAMsize: {
+    type: Number,
+    required: true,
+    enum: {
+      values: [1, 2, 3, 4, 6, 8, 16, 32, 64],
+      message: 'Value insn`t supported'
+    }
+  },
+  CPUname: {
+    type: String,
+    required: true,
+    validate: {
+      validator: value => EQUIPMENT_NAME_VALIDATION_SCHEMA.isValidSync(value)
+    }
+  },
+  screenDiagonal: {
+    type: Schema.Types.Decimal128,
+    required: true,
+    set: value => Number(value.toFixed(1)),
+    min: [2.5, 'Value is too small!'],
+    max: [7.6, 'Value is too large!']
+  },
+  isNFC: {
+    type: Boolean,
+    default: true
+  }
+});
+
+const Phone = mongoose.model('phones', phoneSchema);
+
+module.exports = Phone;
