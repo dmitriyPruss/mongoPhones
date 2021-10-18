@@ -1,0 +1,52 @@
+[
+  {
+    "model": "Samsung",
+    "brand": "Galaxy S21 Ultra",
+    "manufacturedYear": 2021,
+    "RAMsize": 64,
+    "CPUname": "Exynos 2100",
+    "screenDiagonal": 6.8,
+    "isNFC": true,
+    "CPU_id": 1
+  },
+  {
+    "model": "Samsung",
+    "brand": "Galaxy Z Flip",
+    "manufacturedYear": 2021,
+    "RAMsize": 32,
+    "CPUname": "Qualcomm Snapdragon",
+    "screenDiagonal": 6.7,
+    "isNFC": true,
+    "CPU_id": 2
+  },
+  {
+    "model": "Huawei",
+    "brand": "P40",
+    "manufacturedYear": 2020,
+    "RAMsize": 6,
+    "CPUname": "HiSilicon Kirin 810",
+    "screenDiagonal": 6.4,
+    "isNFC": true,
+    "CPU_id": 3
+  },
+  {
+    "model": "Sony",
+    "brand": "Xperia 10 II",
+    "manufacturedYear": 2020,
+    "RAMsize": 4,
+    "CPUname": "Qualсomm Snapdragon",
+    "screenDiagonal": 6,
+    "isNFC": true,
+    "CPU_id": 2
+  },
+  {
+    "model": "Sony",
+    "brand": "Xperia 5 II",
+    "manufacturedYear": 2021,
+    "RAMsize": 8,
+    "CPUname": "Qualсomm Snapdragon",
+    "screenDiagonal": 6.5,
+    "isNFC": true,
+    "CPU_id": 2
+  }
+]

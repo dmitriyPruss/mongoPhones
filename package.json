@@ -1,0 +1,20 @@
+{
+  "name": "phones_crud_with_mongo",
+  "version": "1.0.0",
+  "description": "app used node, express, mongoose",
+  "main": "index.js",
+  "scripts": {
+    "dev": "nodemon ./server.js"
+  },
+  "author": "Dmitriy",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.17.1",
+    "http-errors": "^1.8.0",
+    "mongoose": "^6.0.11",
+    "yup": "^0.32.11"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.13"
+  }
+}

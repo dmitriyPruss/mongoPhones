@@ -1,0 +1,26 @@
+[
+  {
+    "name": "Exynos 2100",
+    "num_of_cores": 8,
+    "frequency": "1×2,9 GHz + 3×2,8 GHz + 4×2,2 GHz",
+    "GPU": "Mali-G78 MP14"
+  },
+  {
+    "name": "Qualcomm Snapdragon",
+    "num_of_cores": 8,
+    "frequency": " 2 х 2.3 GHz + 6 x 1.8 GHz",
+    "GPU": "Adreno 618"
+  },
+  {
+    "name": "HiSilicon Kirin 810",
+    "num_of_cores": 8,
+    "frequency": "2x 2.27 GHz + 6x 1.9 GHz",
+    "GPU": "Mali-G52 MP6"
+  },
+  {
+    "name": "MediaTek Helio G85",
+    "num_of_cores": 8,
+    "frequency": "2x2 GHz + 6x1.8 GHz",
+    "GPU": "Mali-G52 MP2"
+  }
+]
