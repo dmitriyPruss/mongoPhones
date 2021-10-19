@@ -1,7 +1,7 @@
 const { createErr400, createErr404 } = require('./../middleware/errHw');
 const { Phone } = require('./../models');
 const { PHONE_PROPS } = require('./../constants');
-const { dataPhoneHandler } = require('./../dataHandlers/phoneDataMw');
+const { phoneHandler } = require('./../dataHandlers/phoneDataHandler');
 
 // CREATE
 module.exports.createPhone = async (req, res, next) => {
@@ -46,8 +46,9 @@ module.exports.getPhones = async (req, res, next) => {
   try {
     const foundPhones = await Phone.find().limit(7);
 
+    // await Phone.deleteMany({});
     const foundPhonesData = foundPhones.map(foundPhone =>
-      dataPhoneHandler(foundPhone, PHONE_PROPS)
+      phoneHandler(foundPhone, PHONE_PROPS)
     );
 
     res.status(200).send({ data: foundPhonesData });
@@ -65,7 +66,7 @@ module.exports.getPhoneById = async (req, res, next) => {
     const foundPhone = await Phone.findById(phoneId);
 
     if (foundPhone) {
-      const phoneData = dataPhoneHandler(foundPhone, PHONE_PROPS);
+      const phoneData = phoneHandler(foundPhone, PHONE_PROPS);
 
       return res.status(200).send({ data: phoneData });
     }

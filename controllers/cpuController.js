@@ -1,19 +1,24 @@
 const { createErr400, createErr404 } = require('./../middleware/errHw');
-const { CPU } = require('./../models');
-const { PHONE_PROPS } = require('./../constants');
-const { dataPhoneHandler } = require('./../dataHandlers/phoneDataMw');
+const { CPU, Phone } = require('./../models');
+const { CPU_PROPS } = require('./../constants');
+const { cpuHandler } = require('./../dataHandlers/cpuDataHandler');
 
 // CREATE
 module.exports.createPhoneByCPU = async (req, res, next) => {
-  const { body } = req;
   try {
-    if (!Array.isArray(body)) {
-      // const newPhoneInst = new Phone(body);
-      // const createdPhone = await newPhoneInst.save();
+    if (req.query.processorId) {
+      const {
+        body,
+        query: { processorId }
+      } = req;
 
-      // if (createdPhone) {
-      //   return res.status(200).send({ data: createdPhone });
-      // }
+      body.CPU_id = processorId;
+      const newPhoneInst = new Phone(body);
+      const createdPhone = await newPhoneInst.save();
+
+      if (createdPhone) {
+        return res.status(200).send({ data: createdPhone });
+      }
       next(createErr400);
     } else {
       next();
@@ -45,8 +50,19 @@ module.exports.createCPUs = async (req, res, next) => {
 // READ
 module.exports.getPhonesByCPU = async (req, res, next) => {
   try {
-    // const foundCPUs = await CPU.find().limit(5);
-    // res.status(200).send({ data: foundCPUs });
+    if (req.query.processorId) {
+      const {
+        query: { processorId }
+      } = req;
+
+      const foundCPU = await CPU.findById(processorId);
+      const foundPhones = await Phone.find({ CPU_id: processorId });
+      const foundCPUWithPhones = cpuHandler(foundCPU, foundPhones, CPU_PROPS);
+
+      res.status(200).send({ data: foundCPUWithPhones });
+    } else {
+      next();
+    }
   } catch (error) {
     next(error);
   }
@@ -55,8 +71,11 @@ module.exports.getPhonesByCPU = async (req, res, next) => {
 module.exports.getCPUs = async (req, res, next) => {
   try {
     const foundCPUs = await CPU.find().limit(5);
+    // await CPU.deleteMany({});
 
-    res.status(200).send({ data: foundCPUs });
+    if (foundCPUs) {
+      res.status(200).send({ data: foundCPUs });
+    }
   } catch (error) {
     next(error);
   }

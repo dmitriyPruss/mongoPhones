@@ -35,11 +35,11 @@ const phoneSchema = new Schema(
         message: 'Value isn`t supported'
       }
     },
-    CPUname: {
-      type: String,
+    CPU_id: {
+      type: Number,
       required: true,
       validate: {
-        validator: value => EQUIPMENT_NAME_VALIDATION_SCHEMA.isValidSync(value)
+        validator: value => value >= 0
       }
     },
     screenDiagonal: {
@@ -55,7 +55,14 @@ const phoneSchema = new Schema(
       default: true
     }
   },
-  { versionKey: false }
+  {
+    versionKey: false
+  }
+);
+
+phoneSchema.index(
+  { model: 1, brand: 1, prodYear: 1, CPU_id: 1 },
+  { unique: true }
 );
 
 const Phone = mongoose.model('phones', phoneSchema);

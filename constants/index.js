@@ -10,9 +10,10 @@ const CONSTANTS = {
     'brand',
     'manufacturedYear',
     'RAMsize',
-    'CPUname',
+    'CPU_id',
     'isNFC'
   ],
+  CPU_PROPS: ['name', 'num_of_cores', 'frequency', 'GPU'],
   ERRORS: {
     ERROR_400: {
       ERROR_CODE: 400,

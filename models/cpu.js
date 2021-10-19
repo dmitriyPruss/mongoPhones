@@ -7,6 +7,10 @@ const {
 
 const cpuSchema = new Schema(
   {
+    _id: {
+      type: Number,
+      required: true
+    },
     name: {
       type: String,
       required: true,
@@ -34,11 +38,13 @@ const cpuSchema = new Schema(
       type: String,
       required: true,
       minLength: [3, 'Name is too short'],
-      maxlength: [42, , 'Name is too long']
+      maxLength: [42, , 'Name is too long']
     }
   },
-  { versionKey: false }
+  { versionKey: false, _id: false }
 );
+
+cpuSchema.index({ name: 1, num_of_cores: 1, frequency: 1 }, { unique: true });
 
 const CPU = mongoose.model('cpus', cpuSchema);
 
