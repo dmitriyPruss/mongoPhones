@@ -4,6 +4,15 @@ const CONSTANTS = {
   DBMS: 'mongodb',
   DATABASE_CURRENT_NAME: 'phones_db',
   PROCESS_DEV: 'development',
+  PHONE_PROPS: [
+    '_id',
+    'model',
+    'brand',
+    'manufacturedYear',
+    'RAMsize',
+    'CPUname',
+    'isNFC'
+  ],
   ERRORS: {
     ERROR_400: {
       ERROR_CODE: 400,

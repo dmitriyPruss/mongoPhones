@@ -1,28 +1,41 @@
-const _ = require('lodash');
 const { createErr400, createErr404 } = require('./../middleware/errHw');
 const { Phone } = require('./../models');
-
-const phoneProps = [
-  '_id',
-  'model',
-  'brand',
-  'manufacturedYear',
-  'RAMsize',
-  'CPUname',
-  'isNFC'
-];
+const { PHONE_PROPS } = require('./../constants');
+const { dataPhoneHandler } = require('./../dataHandlers/phoneDataMw');
 
 // CREATE
 module.exports.createPhone = async (req, res, next) => {
   const { body } = req;
   try {
-    const newPhoneInst = new Phone(body);
-    const createdPhone = await newPhoneInst.save();
+    if (!Array.isArray(body)) {
+      const newPhoneInst = new Phone(body);
+      const createdPhone = await newPhoneInst.save();
 
-    if (createdPhone) {
-      return res.status(200).send({ data: createdPhone });
+      if (createdPhone) {
+        return res.status(200).send({ data: createdPhone });
+      }
+      next(createErr400);
+    } else {
+      next();
     }
-    next(createErr400);
+  } catch (error) {
+    next(error);
+  }
+};
+
+module.exports.createPhones = async (req, res, next) => {
+  const { body } = req;
+  try {
+    if (Array.isArray(body)) {
+      const createdPhones = await Phone.create(body);
+
+      if (createdPhones) {
+        return res.status(200).send({ data: createdPhones });
+      }
+      next(createErr400);
+    } else {
+      return;
+    }
   } catch (error) {
     next(error);
   }
@@ -31,14 +44,11 @@ module.exports.createPhone = async (req, res, next) => {
 // READ
 module.exports.getPhones = async (req, res, next) => {
   try {
-    const foundPhones = await Phone.find().limit(5);
+    const foundPhones = await Phone.find().limit(7);
 
-    const foundPhonesData = foundPhones.map(foundPhone => {
-      const foundPhoneData = _.pick(foundPhone, phoneProps);
-      foundPhoneData.screenDiagonal = +foundPhone.screenDiagonal;
-
-      return foundPhoneData;
-    });
+    const foundPhonesData = foundPhones.map(foundPhone =>
+      dataPhoneHandler(foundPhone, PHONE_PROPS)
+    );
 
     res.status(200).send({ data: foundPhonesData });
   } catch (error) {
@@ -55,8 +65,7 @@ module.exports.getPhoneById = async (req, res, next) => {
     const foundPhone = await Phone.findById(phoneId);
 
     if (foundPhone) {
-      const phoneData = _.pick(foundPhone, phoneProps);
-      phoneData.screenDiagonal = +foundPhone.screenDiagonal;
+      const phoneData = dataPhoneHandler(foundPhone, PHONE_PROPS);
 
       return res.status(200).send({ data: phoneData });
     }

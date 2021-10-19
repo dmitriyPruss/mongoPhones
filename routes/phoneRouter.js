@@ -6,7 +6,7 @@ const phoneRouter = Router();
 phoneRouter
   .route('/')
   .get(phoneController.getPhones)
-  .post(phoneController.createPhone);
+  .post(phoneController.createPhone, phoneController.createPhones);
 
 phoneRouter
   .route('/:phoneId')

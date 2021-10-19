@@ -1,80 +1,119 @@
-// const { CPU, Phone } = require('../models');
-// const _ = require('lodash');
+const { createErr400, createErr404 } = require('./../middleware/errHw');
+const { CPU } = require('./../models');
+const { PHONE_PROPS } = require('./../constants');
+const { dataPhoneHandler } = require('./../dataHandlers/phoneDataMw');
 
-// module.exports.getCPUs = async (req, res, next) => {
-//   try {
-//     if (req.query.processorId) {
-//       const {
-//         query: { processorId }
-//       } = req;
+// CREATE
+module.exports.createPhoneByCPU = async (req, res, next) => {
+  const { body } = req;
+  try {
+    if (!Array.isArray(body)) {
+      // const newPhoneInst = new Phone(body);
+      // const createdPhone = await newPhoneInst.save();
 
-//       // const [sortedCPU] = await CPU.findAll({
-//       //   raw: true,
-//       //   attributes: {
-//       //     exclude: ['id', 'createdAt', 'updatedAt']
-//       //   },
-//       //   where: { id: processorId },
-//       //   limit: 3
-//       // });
+      // if (createdPhone) {
+      //   return res.status(200).send({ data: createdPhone });
+      // }
+      next(createErr400);
+    } else {
+      next();
+    }
+  } catch (error) {
+    next(error);
+  }
+};
 
-//       // const sortedPhones = await sortedCPU.getPhones();
-//       // console.log(`sortedPhones`, sortedPhones);
+module.exports.createCPUs = async (req, res, next) => {
+  const { body } = req;
 
-//       const sortedPhones = await Phone.findAll({
-//         raw: true,
-//         attributes: {
-//           exclude: ['id', 'createdAt', 'updatedAt', 'CPU_id']
-//         },
-//         where: { CPU_id: processorId }
-//       });
+  try {
+    if (Array.isArray(body)) {
+      const createdCPUs = await CPU.create(body);
 
-//       res.status(200).send(sortedPhones);
-//     }
+      if (createdCPUs) {
+        return res.status(200).send({ data: createdCPUs });
+      }
+      next(createErr400);
+    } else {
+      return;
+    }
+  } catch (error) {
+    next(error);
+  }
+};
 
-//     const foundCPUs = await CPU.findAll({
-//       raw: true,
-//       attributes: {
-//         exclude: ['id', 'createdAt', 'updatedAt']
-//       },
-//       limit: 3
-//     });
+// READ
+module.exports.getPhonesByCPU = async (req, res, next) => {
+  try {
+    // const foundCPUs = await CPU.find().limit(5);
+    // res.status(200).send({ data: foundCPUs });
+  } catch (error) {
+    next(error);
+  }
+};
 
-//     res.status(200).send(foundCPUs);
-//   } catch (error) {
-//     next(error);
-//   }
-// };
+module.exports.getCPUs = async (req, res, next) => {
+  try {
+    const foundCPUs = await CPU.find().limit(5);
 
-// module.exports.createPhoneByCPU = async (req, res, next) => {
-//   const { body } = req;
+    res.status(200).send({ data: foundCPUs });
+  } catch (error) {
+    next(error);
+  }
+};
 
-//   try {
-//     if (req.query.processorId) {
-//       const {
-//         query: { processorId }
-//       } = req;
+module.exports.getCPUById = async (req, res, next) => {
+  const {
+    params: { cpuId }
+  } = req;
 
-//       const [selectedCPU] = await CPU.findAll({
-//         raw: true,
-//         where: { id: processorId }
-//       });
+  try {
+    const foundCPU = await CPU.findById(cpuId);
 
-//       body.CPUname = selectedCPU.name;
-//       body.CPU_id = processorId;
+    if (foundCPU) {
+      return res.status(200).send({ data: foundCPU });
+    }
+    next(createErr404);
+  } catch (error) {
+    next(error);
+  }
+};
 
-//       // const createdPhone2 = await selectedCPU.createPhone(body);
-//       // console.log(`createdPhone2`, createdPhone2);
-//     }
+// UPDATE
+module.exports.updateCPUById = async (req, res, next) => {
+  const {
+    params: { cpuId },
+    body
+  } = req;
 
-//     const createdPhone = await Phone.create(body);
-//     const sendedPhone = _.omit(createdPhone.get(), [
-//       'id',
-//       'createdAt',
-//       'updatedAt'
-//     ]);
+  try {
+    const updatedCPU = await CPU.findByIdAndUpdate(cpuId, body);
 
-//     res.status(200).send(sendedPhone);
-//   } catch (error) {
-//     next(error);
-//   }
-// };
+    if (updatedCPU) {
+      return next();
+    }
+
+    next(createErr404);
+  } catch (error) {
+    next(error);
+  }
+};
+
+// DELETE
+module.exports.deleteCPUById = async (req, res, next) => {
+  const {
+    params: { cpuId }
+  } = req;
+
+  try {
+    const deletedCPU = await CPU.findByIdAndDelete(cpuId);
+
+    if (deletedCPU) {
+      return res.status(200).send({ data: deletedCPU });
+    }
+
+    next(createErr404);
+  } catch (error) {
+    next(error);
+  }
+};

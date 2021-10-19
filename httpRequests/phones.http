@@ -1,7 +1,7 @@
 GET http://localhost:5000/api/phones HTTP/1.1
 
 ###
-GET http://localhost:5000/api/phones/616ded4f4a2b7dee5ebc4bf7 HTTP/1.1
+GET http://localhost:5000/api/phones/616e89328195765bda9a1319 HTTP/1.1
 
 ###
 POST http://localhost:5000/api/phones HTTP/1.1
@@ -17,6 +17,59 @@ Content-Type: application/json
   "isNFC": true
 }
 
+
+###
+POST http://localhost:5000/api/phones HTTP/1.1
+Content-Type: application/json
+
+[
+  {
+    "model": "Samsung",
+    "brand": "Galaxy S21 Ultra",
+    "manufacturedYear": 2021,
+    "RAMsize": 64,
+    "CPUname": "Exynos 2100",
+    "screenDiagonal": 6.8,
+    "isNFC": true
+  },
+  {
+    "model": "Samsung",
+    "brand": "Galaxy Z Flip",
+    "manufacturedYear": 2021,
+    "RAMsize": 32,
+    "CPUname": "Qualcomm Snapdragon",
+    "screenDiagonal": 6.7,
+    "isNFC": true
+  },
+  {
+    "model": "Huawei",
+    "brand": "P40",
+    "manufacturedYear": 2020,
+    "RAMsize": 6,
+    "CPUname": "HiSilicon Kirin 810",
+    "screenDiagonal": 6.4,
+    "isNFC": true
+  },
+  {
+    "model": "Sony",
+    "brand": "Xperia 10 II",
+    "manufacturedYear": 2020,
+    "RAMsize": 4,
+    "CPUname": "Qualcomm Snapdragon",
+    "screenDiagonal": 6,
+    "isNFC": true
+  },
+  {
+    "model": "Sony",
+    "brand": "Xperia 5 II",
+    "manufacturedYear": 2021,
+    "RAMsize": 8,
+    "CPUname": "Qualcomm Snapdragon",
+    "screenDiagonal": 6.5,
+    "isNFC": true
+  }
+]
+
 ###
 PATCH http://localhost:5000/api/phones/616de16e8b6eee9e6048b5b2 HTTP/1.1
 Content-Type: application/json 
@@ -26,20 +79,5 @@ Content-Type: application/json
 }
 
 ###
-PUT http://localhost:5000/api/phones/6 HTTP/1.1
-Content-Type: application/json 
-
-{
-  "model": "Samsung",
-  "brand": "Galaxy Z Flip",
-  "manufacturedYear": 2021,
-  "RAMsize": 32,
-  "CPUname": "Qualcomm Snapdragon",
-  "screenDiagonal": 6.7,
-  "isNFC": true,
-  "CPU_id": 2
-}
-
-###
-DELETE http://localhost:5000/api/phones/616de90e4d5771e586e39a06
+DELETE http://localhost:5000/api/phones/616e89328195765bda9a1319
 
