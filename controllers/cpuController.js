@@ -59,7 +59,10 @@ module.exports.getPhonesByCPU = async (req, res, next) => {
       const foundPhones = await Phone.find({ CPU_id: processorId });
       const foundCPUWithPhones = cpuHandler(foundCPU, foundPhones, CPU_PROPS);
 
-      res.status(200).send({ data: foundCPUWithPhones });
+      if (foundCPUWithPhones) {
+        return res.status(200).send({ data: foundCPUWithPhones });
+      }
+      next(createErr404);
     } else {
       next();
     }
@@ -71,7 +74,6 @@ module.exports.getPhonesByCPU = async (req, res, next) => {
 module.exports.getCPUs = async (req, res, next) => {
   try {
     const foundCPUs = await CPU.find().limit(5);
-    // await CPU.deleteMany({});
 
     if (foundCPUs) {
       res.status(200).send({ data: foundCPUs });

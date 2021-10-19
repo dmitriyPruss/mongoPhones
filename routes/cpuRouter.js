@@ -13,4 +13,5 @@ cpuRouter
   .get(cpuController.getCPUById)
   .patch(cpuController.updateCPUById, cpuController.getCPUById)
   .delete(cpuController.deleteCPUById);
+
 module.exports = cpuRouter;

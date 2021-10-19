@@ -60,10 +60,7 @@ const phoneSchema = new Schema(
   }
 );
 
-phoneSchema.index(
-  { model: 1, brand: 1, prodYear: 1, CPU_id: 1 },
-  { unique: true }
-);
+phoneSchema.index({ model: 1, brand: 1, CPU_id: 1 }, { unique: true });
 
 const Phone = mongoose.model('phones', phoneSchema);
 

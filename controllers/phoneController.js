@@ -46,7 +46,6 @@ module.exports.getPhones = async (req, res, next) => {
   try {
     const foundPhones = await Phone.find().limit(7);
 
-    // await Phone.deleteMany({});
     const foundPhonesData = foundPhones.map(foundPhone =>
       phoneHandler(foundPhone, PHONE_PROPS)
     );

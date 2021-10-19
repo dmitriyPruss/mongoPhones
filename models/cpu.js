@@ -38,7 +38,7 @@ const cpuSchema = new Schema(
       type: String,
       required: true,
       minLength: [3, 'Name is too short'],
-      maxLength: [42, , 'Name is too long']
+      maxLength: [42, 'Name is too long']
     }
   },
   { versionKey: false, _id: false }

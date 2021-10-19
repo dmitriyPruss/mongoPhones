@@ -13,5 +13,5 @@ module.exports.EQUIPMENT_NAME_VALIDATION_SCHEMA = createValidScheme(
   /^[A-Za-z0-9\s]{1,30}$/
 );
 module.exports.FREQUENCY_VALIDATION_SCHEMA = createValidScheme(
-  /^[\d\s\+\.,x(GHz)]{1,50}$/
+  /^([\d\s\+\.,x]{1,50}(GHz)+){1,6}$/
 );

@@ -8,12 +8,12 @@ const CONSTANTS = {
     '_id',
     'model',
     'brand',
-    'manufacturedYear',
+    'prodYear',
     'RAMsize',
     'CPU_id',
     'isNFC'
   ],
-  CPU_PROPS: ['name', 'num_of_cores', 'frequency', 'GPU'],
+  CPU_PROPS: ['name', 'cores', 'frequency', 'GPU'],
   ERRORS: {
     ERROR_400: {
       ERROR_CODE: 400,
@@ -25,7 +25,7 @@ const CONSTANTS = {
     },
     ERROR_500: {
       ERROR_CODE: 500,
-      ERROR_MESSAGE: 'INTERNAL SERVER ERROR'
+      ERROR_MESSAGE: 'Internal Server Error'
     }
   }
 };
