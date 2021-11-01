@@ -5,24 +5,21 @@ const { cpuHandler } = require('./../dataHandlers/cpuDataHandler');
 
 // CREATE
 module.exports.createPhoneByCPU = async (req, res, next) => {
+  const {
+    body,
+    params: { ['cpuId']: cpuId }
+  } = req;
+
   try {
-    if (req.query.processorId) {
-      const {
-        body,
-        query: { processorId }
-      } = req;
+    body.CPU_id = cpuId;
+    const newPhoneInst = new Phone(body);
+    const createdPhone = await newPhoneInst.save();
 
-      body.CPU_id = processorId;
-      const newPhoneInst = new Phone(body);
-      const createdPhone = await newPhoneInst.save();
-
-      if (createdPhone) {
-        return res.status(200).send({ data: createdPhone });
-      }
-      next(createErr400);
-    } else {
-      next();
+    if (createdPhone) {
+      return res.status(200).send({ data: createdPhone });
     }
+
+    next(createErr400);
   } catch (error) {
     next(error);
   }
@@ -39,9 +36,8 @@ module.exports.createCPUs = async (req, res, next) => {
         return res.status(200).send({ data: createdCPUs });
       }
       next(createErr400);
-    } else {
-      return;
     }
+    return;
   } catch (error) {
     next(error);
   }
@@ -49,23 +45,23 @@ module.exports.createCPUs = async (req, res, next) => {
 
 // READ
 module.exports.getPhonesByCPU = async (req, res, next) => {
-  try {
-    if (req.query.processorId) {
-      const {
-        query: { processorId }
-      } = req;
+  const {
+    params: { ['cpuId']: cpuId }
+  } = req;
 
-      const foundCPU = await CPU.findById(processorId);
-      const foundPhones = await Phone.find({ CPU_id: processorId });
+  try {
+    const foundCPU = await CPU.findById(cpuId);
+
+    if (foundCPU) {
+      const foundPhones = await Phone.find({ CPU_id: cpuId });
       const foundCPUWithPhones = cpuHandler(foundCPU, foundPhones, CPU_PROPS);
 
       if (foundCPUWithPhones) {
         return res.status(200).send({ data: foundCPUWithPhones });
       }
-      next(createErr404);
-    } else {
-      next();
     }
+
+    next(createErr404);
   } catch (error) {
     next(error);
   }
@@ -108,7 +104,7 @@ module.exports.updateCPUById = async (req, res, next) => {
   } = req;
 
   try {
-    const updatedCPU = await CPU.findByIdAndUpdate(cpuId, body);
+    const updatedCPU = await CPU.findByIdAndUpdate(cpuId, body); // пересмотреть стрим насчет корректного апдейта
 
     if (updatedCPU) {
       return next();

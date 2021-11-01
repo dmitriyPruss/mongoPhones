@@ -5,8 +5,8 @@ const cpuRouter = Router();
 
 cpuRouter
   .route('/')
-  .get(cpuController.getPhonesByCPU, cpuController.getCPUs)
-  .post(cpuController.createPhoneByCPU, cpuController.createCPUs);
+  .get(cpuController.getCPUs)
+  .post(cpuController.createCPUs);
 
 cpuRouter
   .route('/:cpuId')
@@ -14,4 +14,8 @@ cpuRouter
   .patch(cpuController.updateCPUById, cpuController.getCPUById)
   .delete(cpuController.deleteCPUById);
 
+cpuRouter
+  .route('/:cpuId/phones')
+  .get(cpuController.getPhonesByCPU)
+  .post(cpuController.createPhoneByCPU);
 module.exports = cpuRouter;
