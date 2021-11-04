@@ -15,9 +15,9 @@ module.exports.createPhone = async (req, res, next) => {
         return res.status(200).send({ data: createdPhone });
       }
       next(createErr400);
-    } else {
-      next();
     }
+
+    next();
   } catch (error) {
     next(error);
   }
@@ -33,9 +33,9 @@ module.exports.createPhones = async (req, res, next) => {
         return res.status(200).send({ data: createdPhones });
       }
       next(createErr400);
-    } else {
-      return;
     }
+
+    return;
   } catch (error) {
     next(error);
   }

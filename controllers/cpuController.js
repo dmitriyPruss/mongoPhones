@@ -1,13 +1,12 @@
+const _ = require('lodash');
 const { createErr400, createErr404 } = require('./../middleware/errHw');
 const { CPU, Phone } = require('./../models');
-const { CPU_PROPS } = require('./../constants');
-const { cpuHandler } = require('./../dataHandlers/cpuDataHandler');
 
 // CREATE
 module.exports.createPhoneByCPU = async (req, res, next) => {
   const {
     body,
-    params: { ['cpuId']: cpuId }
+    params: { cpuId }
   } = req;
 
   try {
@@ -15,8 +14,32 @@ module.exports.createPhoneByCPU = async (req, res, next) => {
     const newPhoneInst = new Phone(body);
     const createdPhone = await newPhoneInst.save();
 
-    if (createdPhone) {
-      return res.status(200).send({ data: createdPhone });
+    const [newPhone] = await CPU.aggregate([
+      {
+        $match: { _id: +cpuId }
+      },
+      {
+        $project: { _id: 0 }
+      }
+    ]).lookup({
+      from: 'phones',
+      pipeline: [
+        {
+          $match: { _id: createdPhone._id }
+        },
+        {
+          $project: { _id: 0, CPU_id: 0 }
+        }
+      ],
+      as: 'new_phone'
+    });
+
+    if (newPhone) {
+      newPhone.new_phone = newPhone.new_phone[0];
+
+      newPhone.new_phone.screenDiagonal = +newPhone.new_phone.screenDiagonal;
+
+      return res.status(200).send({ data: newPhone });
     }
 
     next(createErr400);
@@ -46,19 +69,35 @@ module.exports.createCPUs = async (req, res, next) => {
 // READ
 module.exports.getPhonesByCPU = async (req, res, next) => {
   const {
-    params: { ['cpuId']: cpuId }
+    params: { cpuId }
   } = req;
 
   try {
-    const foundCPU = await CPU.findById(cpuId);
-
-    if (foundCPU) {
-      const foundPhones = await Phone.find({ CPU_id: cpuId });
-      const foundCPUWithPhones = cpuHandler(foundCPU, foundPhones, CPU_PROPS);
-
-      if (foundCPUWithPhones) {
-        return res.status(200).send({ data: foundCPUWithPhones });
+    const [foundCPUWithPhones] = await CPU.aggregate([
+      {
+        $match: { _id: +cpuId }
       }
+    ])
+      .lookup({
+        from: 'phones',
+        localField: '_id',
+        foreignField: 'CPU_id',
+        as: 'phones'
+      })
+      .project({ _id: 0 });
+
+    if (foundCPUWithPhones) {
+      const { phones } = foundCPUWithPhones;
+
+      const newPhones = phones.map(phone => {
+        const newPhone = _.omit(phone, ['_id', 'CPU_id']);
+        newPhone.screenDiagonal = +phone.screenDiagonal;
+        return newPhone;
+      });
+
+      foundCPUWithPhones.phones = newPhones;
+
+      return res.status(200).send({ data: foundCPUWithPhones });
     }
 
     next(createErr404);
@@ -104,7 +143,7 @@ module.exports.updateCPUById = async (req, res, next) => {
   } = req;
 
   try {
-    const updatedCPU = await CPU.findByIdAndUpdate(cpuId, body); // пересмотреть стрим насчет корректного апдейта
+    const updatedCPU = await CPU.findByIdAndUpdate(cpuId, body);
 
     if (updatedCPU) {
       return next();
