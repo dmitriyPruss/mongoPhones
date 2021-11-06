@@ -14,31 +14,46 @@ module.exports.createPhoneByCPU = async (req, res, next) => {
     const newPhoneInst = new Phone(body);
     const createdPhone = await newPhoneInst.save();
 
-    const [newPhone] = await CPU.aggregate([
+    const newPhone = await CPU.aggregate([
       {
         $match: { _id: +cpuId }
       },
       {
         $project: { _id: 0 }
       }
-    ]).lookup({
-      from: 'phones',
-      pipeline: [
-        {
-          $match: { _id: createdPhone._id }
-        },
-        {
-          $project: { _id: 0, CPU_id: 0 }
-        }
-      ],
-      as: 'new_phone'
-    });
+    ])
+      .lookup({
+        from: 'phones',
+        pipeline: [
+          {
+            $match: { _id: createdPhone._id }
+          },
+          {
+            $project: {
+              _id: 0,
+              CPU_id: 0
+            }
+          }
+        ],
+        as: 'new_phone'
+      })
+      .then(([result]) => {
+        const {
+          new_phone: [newPhone]
+        } = result;
+
+        newPhone.screenDiagonal += '';
+        newPhone.cpu_params = _.pick(result, [
+          'name',
+          'num_of_cores',
+          'frequency',
+          'GPU'
+        ]);
+
+        return newPhone;
+      });
 
     if (newPhone) {
-      newPhone.new_phone = newPhone.new_phone[0];
-
-      newPhone.new_phone.screenDiagonal = +newPhone.new_phone.screenDiagonal;
-
       return res.status(200).send({ data: newPhone });
     }
 
@@ -73,30 +88,34 @@ module.exports.getPhonesByCPU = async (req, res, next) => {
   } = req;
 
   try {
-    const [foundCPUWithPhones] = await CPU.aggregate([
+    const foundCPUWithPhones = await CPU.aggregate([
       {
         $match: { _id: +cpuId }
       }
     ])
       .lookup({
         from: 'phones',
-        localField: '_id',
-        foreignField: 'CPU_id',
-        as: 'phones'
+        pipeline: [
+          {
+            $match: { CPU_id: +cpuId }
+          },
+          {
+            $project: { _id: 0, CPU_id: 0 }
+          }
+        ],
+        as: 'foundPhones'
       })
-      .project({ _id: 0 });
+      .project({ _id: 0 })
+      .then(([result]) => {
+        result.foundPhones.map(phone => {
+          phone.screenDiagonal = +phone.screenDiagonal;
+          return phone;
+        });
 
-    if (foundCPUWithPhones) {
-      const { phones } = foundCPUWithPhones;
-
-      const newPhones = phones.map(phone => {
-        const newPhone = _.omit(phone, ['_id', 'CPU_id']);
-        newPhone.screenDiagonal = +phone.screenDiagonal;
-        return newPhone;
+        return result;
       });
 
-      foundCPUWithPhones.phones = newPhones;
-
+    if (foundCPUWithPhones) {
       return res.status(200).send({ data: foundCPUWithPhones });
     }
 
